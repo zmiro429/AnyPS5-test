@@ -108,4 +108,23 @@ int APS5_VABI sceAgcGetGsOversubscription(ShaderRegister* regs, const Shader* gs
     return 0;
 }
 
+int APS5_VABI sceAgcGetGsPrimPayload(std::uint32_t* payload, const Shader* gs) {
+    if (payload == nullptr || gs == nullptr) {
+        throw std::runtime_error(std::string(__func__) + ": payload or gs is null");
+    }
+    if (gs->num_cx_registers != 0 && gs->cx_registers == nullptr) {
+        throw std::runtime_error(std::string(__func__) + ": gs has context registers but no register array");
+    }
+    *payload = 0;
+    for (std::uint32_t i = 0; i < gs->num_cx_registers; ++i) {
+        if (gs->cx_registers[i].offset == ShaderRegs::SPI_SHADER_IDX_FORMAT) {
+            if ((gs->cx_registers[i].value & 0xFu) == 2u) {
+                *payload = 8;
+            }
+            break;
+        }
+    }
+    return 0;
+}
+
 }

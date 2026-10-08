@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 extern "C" int APS5_VABI sceAgcGetGsOversubscription(ShaderRegister* regs, const Shader* gs, std::uint32_t budget, float factor);
+extern "C" int APS5_VABI sceAgcGetGsPrimPayload(std::uint32_t* payload, const Shader* gs);
 
 namespace {
 
@@ -125,6 +126,33 @@ void testRejections() {
 
 }
 
+void testPrimPayload() {
+    std::array<ShaderRegister, 3> cx{{{ShaderRegs::GE_MAX_OUTPUT_PER_SUBGROUP, 2u}, {ShaderRegs::SPI_SHADER_IDX_FORMAT, 0xf2u}, {ShaderRegs::SPI_SHADER_IDX_FORMAT, 3u}}};
+    Shader shader{};
+    shader.cx_registers = cx.data();
+    shader.num_cx_registers = static_cast<std::uint8_t>(cx.size());
+    std::uint32_t payload = 0xdeadbeefu;
+    check(sceAgcGetGsPrimPayload(&payload, &shader) == 0 && payload == 8u, "index format 2 does not give an 8-byte payload");
+    cx[1].value = 3u;
+    cx[2].value = 2u;
+    payload = 0xdeadbeefu;
+    check(sceAgcGetGsPrimPayload(&payload, &shader) == 0 && payload == 0u, "only the first index format register counts");
+    cx[1].offset = ShaderRegs::SPI_VS_OUT_CONFIG;
+    cx[2].offset = ShaderRegs::SPI_VS_OUT_CONFIG;
+    payload = 0xdeadbeefu;
+    check(sceAgcGetGsPrimPayload(&payload, &shader) == 0 && payload == 0u, "a shader without an index format has a payload");
+    shader.num_cx_registers = 0;
+    shader.cx_registers = nullptr;
+    payload = 0xdeadbeefu;
+    check(sceAgcGetGsPrimPayload(&payload, &shader) == 0 && payload == 0u, "a shader without context registers has a payload");
+    shader.num_cx_registers = 1;
+    payload = 0xdeadbeefu;
+    expectFailure([&] { sceAgcGetGsPrimPayload(&payload, &shader); });
+    check(payload == 0xdeadbeefu, "a rejected call wrote the payload");
+    expectFailure([&] { sceAgcGetGsPrimPayload(nullptr, &shader); });
+    expectFailure([&] { sceAgcGetGsPrimPayload(&payload, nullptr); });
+}
+
 int main() {
     try {
         testBudgetLimits();
@@ -132,6 +160,7 @@ int main() {
         testExportBound();
         testRegisterFields();
         testRejections();
+        testPrimPayload();
         LibcRunShutdown_nid_postfix();
         std::puts("AGC GS oversubscription tests passed");
         return 0;

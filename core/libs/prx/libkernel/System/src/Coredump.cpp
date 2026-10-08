@@ -8,6 +8,7 @@
 // The handler is recorded but never invoked: host crashes are not turned into guest core dumps.
 static std::atomic<uint64_t> g_coredumpHandler{0};
 static std::atomic<uint64_t> g_coredumpContext{0};
+static constexpr int COREDUMP_ERROR_NOT_IN_COREDUMP_HANDLER = static_cast<int>(0x81180003u);
 
 extern "C" {
 
@@ -31,9 +32,10 @@ int APS5_VABI sceKernelDebugWriteCppExceptionInfo(const void* exception, uint64_
 }
 
 
-int APS5_VABI sceCoredumpAttachUserFile(void) {
-    NotImplemented_nid_no_patch("5nc2gdLNsok");
-    return 0;
+int APS5_VABI sceCoredumpAttachUserFile(uint32_t user_value, const char* path) {
+    (void)user_value;
+    (void)path;
+    return COREDUMP_ERROR_NOT_IN_COREDUMP_HANDLER;
 }
 
 int APS5_VABI sceCoredumpGetStopInfoGpu_Agc(void) {
@@ -41,9 +43,12 @@ int APS5_VABI sceCoredumpGetStopInfoGpu_Agc(void) {
     return 0;
 }
 
-int APS5_VABI sceCoredumpAttachMemoryRegionAsUserFile(void) {
-    NotImplemented_nid_no_patch("MEJ7tc7ThwM");
-    return 0;
+int APS5_VABI sceCoredumpAttachMemoryRegionAsUserFile(uint32_t user_value, const void* mem, size_t size, const char* name) {
+    (void)user_value;
+    (void)mem;
+    (void)size;
+    (void)name;
+    return COREDUMP_ERROR_NOT_IN_COREDUMP_HANDLER;
 }
 
 int APS5_VABI sceCoredumpSetUserDataType(void) {
@@ -66,13 +71,17 @@ int APS5_VABI sceCoredumpWriteUserString() {
     return 0;
 }
 
-int APS5_VABI sceCoredumpAttachUserMemoryFile(void) {
-    NotImplemented_nid_no_patch(__func__);
-    return 0;
+int APS5_VABI sceCoredumpAttachUserMemoryFile(uint32_t user_value, const void* mem, size_t size) {
+    (void)user_value;
+    (void)mem;
+    (void)size;
+    return COREDUMP_ERROR_NOT_IN_COREDUMP_HANDLER;
 }
 
-int APS5_VABI sceCoredumpAttachMemoryRegion(void) {
-    NotImplemented_nid_no_patch(__func__);
-    return 0;
+int APS5_VABI sceCoredumpAttachMemoryRegion(uint32_t user_value, const void* mem, size_t size) {
+    (void)user_value;
+    (void)mem;
+    (void)size;
+    return COREDUMP_ERROR_NOT_IN_COREDUMP_HANDLER;
 }
 }

@@ -24,12 +24,22 @@ int APS5_VABI sceAgcDriverFindResourcesPublic(const void*, void*);
 bool APS5_VABI sceAgcDriverIsCaptureInProgress(void);
 bool APS5_VABI sceAgcDriverIsTraceInProgress(void);
 bool APS5_VABI sceAgcDriverIsSubmitValidationEnabled(void);
+int APS5_VABI sceAgcDriverGetShaderDebuggingStatus(void);
+int APS5_VABI sceAgcDriverRequestCaptureStart(void);
+int APS5_VABI sceAgcDriverRequestCaptureStop(void);
+int APS5_VABI sceAgcDriverTriggerCapture(void);
 }
 
 static constexpr int Unavailable = static_cast<int>(0x8A6C9018);
+static constexpr int DebugUnavailable = static_cast<int>(0x8A6C1000);
 static void Require(bool value) { if (!value) std::abort(); }
 
 int main() {
+    Require(sceAgcDriverGetShaderDebuggingStatus() == 1);
+    Require(sceAgcDriverRequestCaptureStart() == DebugUnavailable);
+    Require(sceAgcDriverTriggerCapture() == DebugUnavailable);
+    Require(sceAgcDriverRequestCaptureStop() == DebugUnavailable);
+    Require(!sceAgcDriverIsCaptureInProgress());
     std::uint32_t owner = 7u;
     std::uint32_t resource = 9u;
     const std::uint32_t memory[4]{};

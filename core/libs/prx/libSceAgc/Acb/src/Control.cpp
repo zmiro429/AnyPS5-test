@@ -3,6 +3,7 @@
 #include "prx/libSceAgc/Command/include/Control.hpp"
 #include "prx/libSceAgc/Command/include/Memory.hpp"
 #include "prx/libSceAgc/Command/include/Packet.hpp"
+#include "prx/libSceAgc/Command/include/Workload.hpp"
 #include "prx/libSceAgc/DcbState/include/Marker.hpp"
 #include <cstdint>
 #include <cstddef>
@@ -77,6 +78,18 @@ uint32_t* APS5_VABI sceAgcAcbSetMarker(CommandBuffer* buf, const char* str, uint
     auto* packet = Agc::Marker::Push(buf, str, __func__);
     Agc::Marker::Pop(buf, __func__);
     return packet;
+}
+
+std::uint32_t* APS5_VABI sceAgcAcbSetWorkloadsActive(CommandBuffer* buf, std::uint32_t streamId, const std::uint32_t* workloadIds, std::uint32_t workloadCount) {
+    return Agc::Command::WriteWorkloadsActive(buf, false, streamId, workloadIds, workloadCount, __func__);
+}
+
+std::uint32_t* APS5_VABI sceAgcAcbSetWorkloadComplete(CommandBuffer* buf, std::uint32_t streamId, std::uint32_t workloadId) {
+    return Agc::Command::WriteWorkloadComplete(buf, false, streamId, workloadId, __func__);
+}
+
+std::uint32_t* APS5_VABI sceAgcAcbSetWorkloadStreamInactive(CommandBuffer* buf, std::uint32_t streamId) {
+    return Agc::Command::WriteWorkloadStreamInactive(buf, false, streamId, __func__);
 }
 
 }

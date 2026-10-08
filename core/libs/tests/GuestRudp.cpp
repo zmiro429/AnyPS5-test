@@ -13,7 +13,7 @@ static void Require(bool value) { if (!value) std::abort(); }
 
 int main() {
     constexpr int notInitialized = static_cast<int>(0x80770001u);
-    std::uint8_t status[0x100];
+    std::uint8_t status[0xF9];
     for (auto& byte : status) byte = 0xAA;
     Require(sceRudpGetStatus(status, sizeof(status)) == notInitialized);
     for (std::uint8_t byte : status) Require(byte == 0xAA);

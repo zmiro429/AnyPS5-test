@@ -13,9 +13,6 @@ int APS5_VABI sceHttpSetCookieEnabled(int, int);
 int APS5_VABI sceHttpSendRequest(int, const void*, std::size_t);
 int APS5_VABI sceNpEntitlementAccessGetEntitlementKey(
     std::uint32_t, const NpUnifiedEntitlementLabel*, NpEntitlementAccessEntitlementKey*);
-int APS5_VABI sceRudpInit_nid_postfix(void*, int);
-int APS5_VABI sceRudpGetStatus(void*, std::size_t);
-int APS5_VABI sceRudpTerminate();
 }
 
 static void Require(bool value) { if (!value) std::abort(); }
@@ -56,24 +53,5 @@ int main() {
         Require(sceNpEntitlementAccessGetEntitlementKey(serviceLabel, &label, &output.key) == noEntitlement);
         Require(std::memcmp(&output, original.data(), sizeof(output)) == 0);
     }
-
-    std::array<unsigned char, 248> status;
-    status.fill(0x5a);
-    const auto originalStatus = status;
-    auto unsupported = [](void* data, std::size_t size) {
-        try {
-            sceRudpGetStatus(data, size);
-        } catch (const std::runtime_error& error) {
-            return std::string_view(error.what()) == "sceRudpGetStatus not implemented";
-        }
-        return false;
-    };
-    Require(unsupported(status.data(), status.size()));
-    Require(status == originalStatus);
-    Require(sceRudpInit_nid_postfix(nullptr, 0) == 0);
-    Require(unsupported(status.data(), status.size()));
-    Require(status == originalStatus);
-    Require(unsupported(nullptr, 0));
-    Require(sceRudpTerminate() == 0);
     return 0;
 }

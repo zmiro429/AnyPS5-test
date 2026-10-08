@@ -862,6 +862,13 @@ struct VoicePortInfo {
     std::uint16_t reserved;
 };
 
+struct VoiceResourceInfo {
+    std::uint16_t max_in_voice_port;
+    std::uint16_t max_out_voice_port;
+    std::uint16_t max_in_device_port;
+    std::uint16_t max_out_device_port;
+};
+
 struct VoiceStartParam {
     void* container;
     std::uint32_t mem_size;

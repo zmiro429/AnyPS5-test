@@ -19,6 +19,7 @@ constexpr std::int32_t PortOutVoice = 4;
 constexpr std::int32_t PortOutDevice = 5;
 constexpr std::int32_t PortStateReady = 1;
 constexpr std::uint32_t VoiceFrameMs = 20;
+constexpr int VoiceErrorArgumentInvalid = static_cast<int>(0x804E0805u);
 
 struct Port {
     std::int32_t type;
@@ -212,8 +213,9 @@ int APS5_VABI sceVoiceSetMuteFlag(uint32_t port_id, bool muted) {
     return 0;
 }
 
-int APS5_VABI sceVoiceGetResourceInfo(void) {
-    NotImplemented_nid_no_patch(__func__);
+int APS5_VABI sceVoiceGetResourceInfo(VoiceResourceInfo* info) {
+    if (info == nullptr) return VoiceErrorArgumentInvalid;
+    *info = VoiceResourceInfo{2, 4, 0, 5};
     return 0;
 }
 

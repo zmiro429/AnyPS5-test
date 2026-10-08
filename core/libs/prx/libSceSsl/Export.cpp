@@ -63,8 +63,12 @@ int APS5_VABI sceSslGetSerialNumber() {
  return 0;
 }
 
-int APS5_VABI sceSslLoadCert() {
-    NotImplemented_nid_no_patch(__func__);
+int APS5_VABI sceSslLoadCert(int ssl_ctx_id, int ca_cert_num, SslData** ca_list, SslData* cert, SslData* priv_key) {
+    (void)ssl_ctx_id;
+    (void)ca_cert_num;
+    (void)ca_list;
+    (void)cert;
+    (void)priv_key;
     return 0;
 }
 

@@ -6,6 +6,7 @@ extern "C" {
 int APS5_VABI sceSslInit_nid_postfix(std::size_t);
 int APS5_VABI sceSslGetCaCerts(int, void*);
 int APS5_VABI sceSslFreeCaCerts(int, void*);
+int APS5_VABI sceSslLoadCert(int, int, void**, void*, void*);
 }
 
 static void Require(bool value) { if (!value) std::abort(); }
@@ -33,4 +34,9 @@ int main() {
     certs = {&marker, 3, &marker};
     Require(sceSslFreeCaCerts(context, &certs) == 0);
     Require(certs.certs == nullptr && certs.num == 0 && certs.pool == nullptr);
+
+    Require(sceSslLoadCert(context, 0, nullptr, nullptr, nullptr) == 0);
+    void* caList[1]{&marker};
+    Require(sceSslLoadCert(context, 1, caList, &marker, &marker) == 0);
+    Require(caList[0] == &marker && marker == 0);
 }

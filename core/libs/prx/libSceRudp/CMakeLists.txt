@@ -1,0 +1,15 @@
+add_library(libSceRudp SHARED EXCLUDE_FROM_ALL Export.cpp)
+target_include_directories(libSceRudp PRIVATE ${LIBS_INCLUDE_DIR})
+configure_windows_unwind(libSceRudp)
+
+if(BUILD_TESTING)
+    add_test_executable(guest_rudp_tests ${LIBS_INCLUDE_DIR}/tests/GuestRudp.cpp)
+    target_include_directories(guest_rudp_tests PRIVATE ${LIBS_INCLUDE_DIR})
+    target_link_libraries(guest_rudp_tests PRIVATE libSceRudp libc)
+    configure_windows_unwind(guest_rudp_tests)
+    add_test(NAME guest_rudp COMMAND guest_rudp_tests)
+    if(WIN32)
+        set_tests_properties(guest_rudp PROPERTIES ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:libSceRudp>")
+    endif()
+endif()

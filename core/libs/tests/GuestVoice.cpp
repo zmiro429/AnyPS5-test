@@ -10,12 +10,18 @@ int APS5_VABI sceVoiceCreatePort(std::uint32_t*, const VoicePortParam*);
 int APS5_VABI sceVoiceDeletePort(std::uint32_t);
 int APS5_VABI sceVoiceSetMuteFlag(std::uint32_t, bool);
 int APS5_VABI sceVoiceGetResourceInfo(VoiceResourceInfo*);
+int APS5_VABI sceVoiceResetPort(std::uint32_t);
 }
 
 static void Require(bool value) { if (!value) std::abort(); }
 
 static bool Throws(std::uint32_t port, bool muted) {
     try { sceVoiceSetMuteFlag(port, muted); } catch (const std::exception&) { return true; }
+    return false;
+}
+
+static bool ResetThrows(std::uint32_t port) {
+    try { sceVoiceResetPort(port); } catch (const std::exception&) { return true; }
     return false;
 }
 
@@ -33,6 +39,7 @@ static void CheckResourceInfo() {
 int main() {
     CheckResourceInfo();
     Require(Throws(0, true));
+    Require(ResetThrows(0));
     VoiceInitParam init{};
     Require(sceVoiceInit(&init, 0) == 0);
     VoicePortParam param{};
@@ -44,6 +51,9 @@ int main() {
     Require(sceVoiceSetMuteFlag(port, true) == 0);
     Require(sceVoiceSetMuteFlag(port, false) == 0);
     Require(Throws(port + 1, true));
+    Require(sceVoiceResetPort(port) == 0);
+    Require(ResetThrows(port + 1));
     Require(sceVoiceDeletePort(port) == 0);
     Require(Throws(port, true));
+    Require(ResetThrows(port));
 }

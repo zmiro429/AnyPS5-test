@@ -91,6 +91,14 @@ int main() {
     Require(scePadOpenExt(user, PAD_PORT_TYPE_SPECIAL, 1, wheel) == PAD_ERROR_INVALID_ARG);
     Require(scePadOpenExt(user, PAD_PORT_TYPE_SPECIAL, 0, nullptr) == PAD_ERROR_INVALID_ARG);
     Require(scePadGetHandle(user, 0, 0) == noHandle);
+    Require(scePadOpenExt(user, 1, 0, nullptr) == PAD_ERROR_INVALID_ARG);
+    Require(scePadOpenExt(user, 0, 1, nullptr) == PAD_ERROR_INVALID_ARG);
+    Require(scePadGetHandle(user, 0, 0) == noHandle);
+    const int extHandle = scePadOpenExt(user, 0, 0, nullptr);
+    Require(extHandle > 0);
+    Require(scePadGetHandle(user, 0, 0) == extHandle);
+    Require(scePadClose_nid_postfix(extHandle) == 0);
+    Require(scePadGetHandle(user, 0, 0) == noHandle);
     const int handle = scePadOpen_nid_postfix(user, 0, 0, nullptr);
     Require(handle > 0);
     Require(scePadGetHandle(user, 0, 0) == handle);

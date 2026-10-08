@@ -141,10 +141,10 @@ int APS5_VABI scePadOpen_nid_postfix(int userId, int type, int index, const void
 }
 
 int APS5_VABI scePadOpenExt(int userId, int type, int index, const void* param) {
+ if (type != PAD_PORT_TYPE_SPECIAL) return scePadOpen_nid_postfix(userId, type, index, nullptr);
  if (!ValidPort(userId, type, index) || param == nullptr) {
   return PAD_ERROR_INVALID_ARG;
  }
- if (type != PAD_PORT_TYPE_SPECIAL) NotImplemented_nid_no_patch(__func__);
  return PAD_ERROR_DEVICE_NOT_CONNECTED;
 }
 
